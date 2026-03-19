@@ -4,6 +4,17 @@
 
 Connect FeedMansion to Claude, Cursor, Windsurf, ChatGPT, or any MCP-compatible AI tool to create content, schedule posts, and manage your social media automatically.
 
+<!--
+⚠️ MAINTAINER NOTE: This repo documents FeedMansion's MCP tools.
+   The canonical tool definitions are in:
+   feedmansion.com repo → backend/lib/api/mcp_tools.ml
+   
+   When tools change, update:
+   - This README.md (tool table)
+   - platforms/openclaw/SKILL.md (detailed tool docs)
+   - feedmansion.com/landing-pages/help/en/mcp-setup.md
+-->
+
 ## What You Can Do
 
 - **Create content with AI** — Generate posts, threads, and captions from URLs or prompts
