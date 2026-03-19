@@ -2,6 +2,15 @@
 
 Use FeedMansion with OpenClaw for AI-powered social media management.
 
+> ⚠️ **Not recommended for non-technical users**
+>
+> OpenClaw requires self-hosting, server administration, and manual configuration. If you're looking for a simpler experience, we recommend:
+> - **[Claude Code](../claude/)** — Install and go, no server needed
+> - **[Cursor](../cursor/)** — Built into your IDE
+> - **[Windsurf](../windsurf/)** — Simple MCP setup
+>
+> OpenClaw is powerful but requires comfort with Linux, Docker, and security configuration.
+
 ## Setup
 
 1. Generate a PAT at [feedmansion.com/settings/tokens](https://feedmansion.com/settings/tokens)

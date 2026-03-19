@@ -2,14 +2,16 @@
 
 Connect FeedMansion to your favorite AI coding assistant or agent.
 
-## Supported Platforms
+## Recommended Platforms
 
-| Platform | Type | Guide |
-|----------|------|-------|
-| [Claude Code / Claude Desktop](./claude/) | AI coding agent | MCP setup |
-| [Cursor IDE](./cursor/) | AI-powered IDE | MCP setup |
-| [Windsurf](./windsurf/) | AI IDE | MCP setup |
-| [OpenClaw](./openclaw/) | AI assistant platform | Skill + MCP |
+| Platform | Difficulty | Best For |
+|----------|------------|----------|
+| [Claude Code / Claude Desktop](./claude/) | 🟢 Easy | Everyone — install and go |
+| [Cursor IDE](./cursor/) | 🟢 Easy | Developers already using Cursor |
+| [Windsurf](./windsurf/) | 🟢 Easy | Developers using Windsurf |
+| [OpenClaw](./openclaw/) | 🔴 Advanced | Self-hosters comfortable with Linux & security |
+
+**New to AI agents?** Start with **Claude Code** or **Cursor** — they require no server setup and work out of the box.
 
 ## Coming Soon
 

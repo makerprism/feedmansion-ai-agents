@@ -17,13 +17,20 @@ Connect FeedMansion to Claude, Cursor, Windsurf, ChatGPT, or any MCP-compatible 
 2. **Generate a token** — Create a PAT at [feedmansion.com/settings/tokens](https://feedmansion.com/settings/tokens)
 3. **Connect your AI tool** — Choose below:
 
-| AI Tool | Setup Guide |
-|---------|-------------|
-| Claude Code / Claude Desktop | [platforms/claude/](./platforms/claude/) |
-| Cursor IDE | [platforms/cursor/](./platforms/cursor/) |
-| Windsurf | [platforms/windsurf/](./platforms/windsurf/) |
-| OpenClaw | [platforms/openclaw/](./platforms/openclaw/) |
-| Any MCP tool | [mcp/README.md](./mcp/README.md) |
+| AI Tool | Difficulty | Setup |
+|---------|------------|-------|
+| [Claude Code / Claude Desktop](./platforms/claude/) | 🟢 Easy | [Guide](./platforms/claude/) |
+| [Cursor IDE](./platforms/cursor/) | 🟢 Easy | [Guide](./platforms/cursor/) |
+| [Windsurf](./platforms/windsurf/) | 🟢 Easy | [Guide](./platforms/windsurf/) |
+| [OpenClaw](./platforms/openclaw/) | 🔴 Advanced | [Guide](./platforms/openclaw/) |
+
+**Just getting started?** We recommend **Claude Code** — no server setup, works immediately.
+
+<details>
+<summary>🔧 Using another MCP-compatible tool?</summary>
+
+See the [MCP setup guide](./mcp/README.md) for generic configuration that works with any MCP client.
+</details>
 
 ## Example Usage
 
