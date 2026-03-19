@@ -22,7 +22,7 @@ Connect FeedMansion to Claude, Cursor, Windsurf, ChatGPT, or any MCP-compatible 
 | [Claude Code / Claude Desktop](./platforms/claude/) | 🟢 Easy | [Guide](./platforms/claude/) |
 | [Cursor IDE](./platforms/cursor/) | 🟢 Easy | [Guide](./platforms/cursor/) |
 | [Windsurf](./platforms/windsurf/) | 🟢 Easy | [Guide](./platforms/windsurf/) |
-| [OpenClaw](./platforms/openclaw/) | 🔴 Advanced | [Guide](./platforms/openclaw/) |
+| [OpenClaw](./platforms/openclaw/) | 🟡 Self-hosted | [Guide](./platforms/openclaw/) |
 
 **Just getting started?** We recommend **Claude Code** — no server setup, works immediately.
 

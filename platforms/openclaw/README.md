@@ -2,14 +2,9 @@
 
 Use FeedMansion with OpenClaw for AI-powered social media management.
 
-> ⚠️ **Not recommended for non-technical users**
+> **Self-hosted option** — OpenClaw runs on your own infrastructure, giving you full control and privacy. Best suited for users comfortable with server administration and security configuration.
 >
-> OpenClaw requires self-hosting, server administration, and manual configuration. If you're looking for a simpler experience, we recommend:
-> - **[Claude Code](../claude/)** — Install and go, no server needed
-> - **[Cursor](../cursor/)** — Built into your IDE
-> - **[Windsurf](../windsurf/)** — Simple MCP setup
->
-> OpenClaw is powerful but requires comfort with Linux, Docker, and security configuration.
+> For a simpler setup without self-hosting, try [Claude Code](../claude/), [Cursor](../cursor/), or [Windsurf](../windsurf/).
 
 ## Setup
 

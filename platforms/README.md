@@ -9,7 +9,7 @@ Connect FeedMansion to your favorite AI coding assistant or agent.
 | [Claude Code / Claude Desktop](./claude/) | 🟢 Easy | Everyone — install and go |
 | [Cursor IDE](./cursor/) | 🟢 Easy | Developers already using Cursor |
 | [Windsurf](./windsurf/) | 🟢 Easy | Developers using Windsurf |
-| [OpenClaw](./openclaw/) | 🔴 Advanced | Self-hosters comfortable with Linux & security |
+| [OpenClaw](./openclaw/) | 🟡 Self-hosted | Users who want full control and privacy |
 
 **New to AI agents?** Start with **Claude Code** or **Cursor** — they require no server setup and work out of the box.
 
