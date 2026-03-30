@@ -2,9 +2,9 @@
 
 Use FeedMansion with OpenClaw for AI-powered social media management.
 
-> **Self-hosted option** — OpenClaw runs on your own infrastructure, giving you full control and privacy. Best suited for users comfortable with server administration and security configuration.
+> **Self-hosted option** - OpenClaw runs on your own infrastructure, giving you full control and privacy. Best suited for users comfortable with server administration and security configuration.
 >
-> ⚠️ **Security note:** Properly securing an OpenClaw deployment (authentication, network exposure, token management, updates) is nontrivial. If misconfigured, it could expose your FeedMansion account or other connected services.
+> **Security note:** Properly securing an OpenClaw deployment (authentication, network exposure, token management, updates) is nontrivial. If misconfigured, it could expose your FeedMansion account or other connected services.
 >
 > For a simpler and more secure setup without self-hosting, try [Claude Code](../claude/), [Cursor](../cursor/), or [Windsurf](../windsurf/).
 
@@ -31,17 +31,17 @@ See [SKILL.md](./SKILL.md) for the full skill definition.
 Once configured, you can ask OpenClaw to:
 
 - "List my FeedMansion presences"
-- "Create a draft for presence X with text..."
-- "Generate a post from this URL..."
+- "Create a draft about our new product launch"
+- "Generate a post from this URL"
 - "Show me my content queues"
-- "Enqueue this content for scheduling"
+- "Schedule these drafts for next week"
 
 ## Agent Tokens
 
 For autonomous agents, create an **agent token** in FeedMansion. Agent tokens have restricted permissions:
 
 - Can create and edit drafts
-- Can submit content for approval (moves to `pending_review`)
-- Can request enqueue (human must approve in web UI)
+- Can schedule drafts (stored as intent, human approves in web UI)
+- Cannot publish directly
 
 This prevents agents from posting without oversight.

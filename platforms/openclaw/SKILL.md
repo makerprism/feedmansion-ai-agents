@@ -1,12 +1,12 @@
 ---
 name: feedmansion
-description: Manage FeedMansion content - drafts, queues, presences, and ghost automations
+description: Manage FeedMansion content - drafts, queues, presences, and scheduling
 metadata:
   openclaw:
     emoji: "✍️"
     category: content
     author: makerprism
-    version: "1.2.0"
+    version: "2.0.0"
     minOpenClawVersion: "1.0.0"
 ---
 
@@ -52,159 +52,92 @@ Use feedmansion_list_presences to show me my presences
 
 ---
 
-### feedmansion_create_content
+### feedmansion_create_draft
 
-Create a new draft in a specific presence.
+Create a new draft using AI generation in brand voice. This is the primary way to create content.
 
 **Arguments:**
 - `presence_id` (required): The presence/brand ID
-- `text` (required): The content text
-- `target_account_ids` (optional): Array of social account IDs to target
+- `topic` (required): What to write about
+- `url` (optional): Article URL to generate from
+- `media_urls` (optional): Array of image/video URLs to download and attach
+- `ghost_id` (optional): Ghost writer ID for a specific writing style
+- `custom_prompt` (optional): Custom writing instructions
+- `title` (optional): Title for platforms like Reddit
+- `queue_id` (optional): Queue to indicate publishing intent
 
 **Usage:**
 ```
-Create a draft for presence "abc123" with text "Hello world!"
-```
-
----
-
-### feedmansion_generate_from_url
-
-Generate AI content from a URL source.
-
-**Arguments:**
-- `url` (required): The URL to generate content from
-- `presence_id` (required): The presence/brand ID
-- `tone` (optional): Tone for the content (professional, casual, etc.)
-
-**Usage:**
-```
+Create a draft for presence "abc123" about our new product launch
 Generate a post from https://example.com/article for presence "abc123"
 ```
 
 ---
 
-### feedmansion_list_queues
+### feedmansion_batch_create_drafts
 
-List all content queues for a presence.
-
-**Arguments:**
-- `presence_id` (required): The presence/brand ID
-
----
-
-### feedmansion_list_content
-
-List drafts/content for a presence.
+Create multiple drafts at once using AI. Up to 10 per call.
 
 **Arguments:**
 - `presence_id` (required): The presence/brand ID
-- `status` (optional): Filter by status (draft, pending_review, approved, etc.)
-- `limit` (optional): Max number of items to return
+- `items` (required): Array of objects with `topic` (required), `ghost_id` (optional), `custom_prompt` (optional)
+- `queue_id` (optional): Queue intent for all items
 
 ---
 
-### feedmansion_approve_content
+### feedmansion_schedule_draft
 
-Submit a draft for review. With agent tokens, content moves to `pending_review` for human approval.
+Approve a draft and schedule it for publishing.
 
 **Arguments:**
-- `content_id` (required): The content ID to approve
-- `target_account_ids` (optional): Array of social account IDs to publish to
+- `presence_id` (required): The presence/brand ID
+- `draft_id` (required): The draft ID to schedule
+- `target_account_ids` (required): Array of social account IDs to publish to
 - `target_accounts` (optional): Array of objects with account_id and format preference
+- `queue_id` (optional): Publishing queue to add this draft to
+- `scheduled_for` (optional): ISO 8601 datetime to schedule for
+- `publish_now` (optional): Set to true for immediate publishing
 
-**Format options:**
+**Format options (for target_accounts):**
 - `"auto"` - Auto-detect from media (default)
 - `"post"` - Standard post (images, text)
 - `"reel"` - Short-form vertical video
 - `"story"` - Ephemeral story (Instagram only)
 
-**Usage:**
-```
-# Simple: just account IDs (format = auto)
-Approve content "xyz789" for accounts ["acc1", "acc2"]
-
-# With format control per account
-Approve content "xyz789" for:
-- account "acc1" as reel
-- account "acc2" as post
-```
-
-**Example with format:**
-```json
-{
-  "content_id": "xyz789",
-  "target_accounts": [
-    {"account_id": "instagram-account-id", "format": "reel"},
-    {"account_id": "facebook-account-id", "format": "post"}
-  ]
-}
-```
-
 ---
 
-### feedmansion_enqueue_content
+### feedmansion_edit_draft
 
-Request to add content to a publishing queue.
-
-**Arguments:**
-- `content_id` (required): The content ID
-- `queue_id` (required): The queue ID to add content to
-
-**Behavior:**
-- With agent tokens: stores the enqueue request for human approval
-- Returns `review_url` where human can approve/reject
-- Human sees the request in FeedMansion web UI → approves → content gets scheduled
-
-**Usage:**
-```
-Enqueue content "xyz789" into queue "queue-abc"
-```
-
-**Response:**
-```json
-{
-  "status": "pending_enqueue",
-  "message": "Enqueue request saved. A team member will review and schedule in the web UI.",
-  "queue_id": "queue-abc",
-  "review_url": "https://feedmansion.com/app/p/presence-id/review"
-}
-```
-
----
-
-### feedmansion_schedule_content
-
-Schedule content for a specific time.
-
-**Arguments:**
-- `content_id` (required): The content ID
-- `scheduled_at` (required): ISO 8601 datetime string
-
----
-
-## Agent Approval Flow
-
-When using an agent token, certain actions require human approval before execution:
-
-| Action | Agent Behavior | Human Action |
-|--------|---------------|--------------|
-| `approve_content` | Moves to `pending_review` status | Review in web UI, then approve |
-| `enqueue_content` | Stores `requested_queue_id` | Review in web UI, approve or reject |
-
-**Best practices:**
-- After calling approve/enqueue, inform the human with the `review_url`
-- Example: "I've submitted 3 posts for your approval. Review them here: [link]"
-- Human clicks link → sees pending items → approves/rejects in FeedMansion UI
-
----
-
-### feedmansion_list_ghosts
-
-List all ghost automations for a presence.
+Edit an existing draft's text or title.
 
 **Arguments:**
 - `presence_id` (required): The presence/brand ID
+- `content_id` (required): The draft ID
+- `content` (optional): New text
+- `title` (optional): New title
+
+---
+
+### feedmansion_add_draft_media
+
+Attach media to a draft from a URL or presigned upload.
+
+**Arguments:**
+- `presence_id` (required): The presence/brand ID
+- `content_id` (required): The draft ID
+- `media_url` (optional): URL to download media from
+- `upload_id` (optional): Upload ID from create_media_upload_url
+
+---
+
+### feedmansion_list_drafts
+
+List drafts for a presence.
+
+**Arguments:**
+- `presence_id` (required): The presence/brand ID
+- `status` (optional): Filter by status (draft, approved, etc.)
+- `limit` (optional): Max number of items to return
 
 ## MCP Endpoint
 

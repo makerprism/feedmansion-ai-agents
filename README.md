@@ -8,7 +8,7 @@ Connect FeedMansion to Claude, Cursor, Windsurf, ChatGPT, or any MCP-compatible 
 ⚠️ MAINTAINER NOTE: This repo documents FeedMansion's MCP tools.
    The canonical tool definitions are in:
    feedmansion.com repo → backend/lib/api/mcp_tools.ml
-   
+
    When tools change, update:
    - This README.md (tool table)
    - platforms/openclaw/SKILL.md (detailed tool docs)
@@ -17,16 +17,16 @@ Connect FeedMansion to Claude, Cursor, Windsurf, ChatGPT, or any MCP-compatible 
 
 ## What You Can Do
 
-- **Create content with AI** — Generate posts, threads, and captions from URLs or prompts
-- **Schedule automatically** — Let AI agents queue content for optimal posting times
-- **Multi-platform posting** — One agent, multiple social networks (Twitter/X, Instagram, Facebook, LinkedIn, etc.)
-- **Human oversight** — Agent tokens require approval before anything goes live
+- **Create content with AI** - Generate posts, threads, and captions from topics or URLs
+- **Schedule automatically** - Let AI agents queue content for optimal posting times
+- **Multi-platform posting** - One agent, multiple social networks (Twitter/X, Instagram, Facebook, LinkedIn, etc.)
+- **Human oversight** - Agent tokens require approval before anything goes live
 
 ## Quick Start
 
-1. **Get FeedMansion** — Sign up at [feedmansion.com](https://feedmansion.com)
-2. **Generate a token** — Create a PAT at [feedmansion.com/settings/tokens](https://feedmansion.com/settings/tokens)
-3. **Connect your AI tool** — Choose below:
+1. **Get FeedMansion** - Sign up at [feedmansion.com](https://feedmansion.com)
+2. **Generate a token** - Create a PAT at [feedmansion.com/settings/tokens](https://feedmansion.com/settings/tokens)
+3. **Connect your AI tool** - Choose below:
 
 | AI Tool | Difficulty | Setup |
 |---------|------------|-------|
@@ -35,10 +35,10 @@ Connect FeedMansion to Claude, Cursor, Windsurf, ChatGPT, or any MCP-compatible 
 | [Windsurf](./platforms/windsurf/) | 🟢 Easy | [Guide](./platforms/windsurf/) |
 | [OpenClaw](./platforms/openclaw/) | 🟡 Self-hosted | [Guide](./platforms/openclaw/) |
 
-**Just getting started?** We recommend **Claude Code** — no server setup, works immediately.
+**Just getting started?** We recommend **Claude Code** - no server setup, works immediately.
 
 <details>
-<summary>🔧 Using another MCP-compatible tool?</summary>
+<summary>Using another MCP-compatible tool?</summary>
 
 See the [MCP setup guide](./mcp/README.md) for generic configuration that works with any MCP client.
 </details>
@@ -74,43 +74,70 @@ For safety, agent tokens have restricted permissions:
 
 | Action | What Happens |
 |--------|--------------|
-| Create draft | ✅ Done immediately |
-| Edit draft | ✅ Done immediately |
-| Submit for approval | ⏳ Moves to `pending_review` — you approve in web UI |
-| Request scheduling | ⏳ Stored for review — you approve in web UI |
+| Create draft | Done immediately |
+| Edit draft | Done immediately |
+| Schedule draft | Stored as intent. You approve in web UI |
+| Publish | Not available to AI. Only humans can publish |
 
 Nothing goes live without your sign-off.
 
 ## Available MCP Tools
 
+**Discovery**
+
 | Tool | Description |
 |------|-------------|
 | `list_presences` | List your brands/projects |
-| `get_presence` | Get presence with connected accounts |
-| `list_content` | List content with status filter |
-| `get_content` | Get specific content details |
-| `create_content` | Create a new draft |
-| `update_content` | Update an existing draft |
-| `add_content_media` | Attach media from URL |
-| `remove_content_media` | Remove attached media |
-| `generate_content_from_url` | Generate AI content from a URL |
-| `approve_content` | Submit for human approval |
-| `enqueue_content` | Request to add to queue |
+| `get_presence` | Get presence details with accounts, queues, and ghost writers |
+| `list_drafts` | Browse drafts, optionally filtered by status |
+| `get_draft` | Get specific draft details |
+| `get_schedule` | View scheduled, queued, and published posts for a date range |
+| `get_brand_voice` | Retrieve complete brand voice for external content creation |
+
+**Create drafts**
+
+| Tool | Description |
+|------|-------------|
+| `create_draft` | Create a draft using AI in brand voice. Optionally generate from a URL or attach media |
+| `batch_create_drafts` | Create up to 10 drafts at once |
+
+**Edit and media**
+
+| Tool | Description |
+|------|-------------|
+| `edit_draft` | Edit an existing draft's text or title |
+| `add_draft_media` | Attach an image or video to a draft |
+| `remove_draft_media` | Remove attached media from a draft |
+| `create_media_upload_url` | Get a presigned URL for large file uploads |
+
+**Schedule**
+
+| Tool | Description |
+|------|-------------|
+| `schedule_draft` | Approve a draft and schedule it (queue, specific time, or publish now) |
+| `batch_schedule_drafts` | Schedule multiple drafts at once |
+
+**Settings and feedback**
+
+| Tool | Description |
+|------|-------------|
+| `update_presence` | Request changes to presence settings |
+| `submit_bug_report` | Report a bug |
+| `submit_feature_request` | Suggest a feature |
 
 ## Why FeedMansion?
 
-- **Built for AI** — Native MCP support, designed for agent integration
-- **Multi-platform** — Post to Twitter/X, Instagram, Facebook, LinkedIn, YouTube, TikTok, and more
-- **Human in the loop** — Agent tokens can't post without approval
-- **Ghost automations** — AI personas that match your brand voice
-- **Smart scheduling** — Queue-based posting with timezone support
+- **Built for AI** - Native MCP support, designed for agent integration
+- **Multi-platform** - Post to Twitter/X, Instagram, Facebook, LinkedIn, YouTube, TikTok, and more
+- **Human in the loop** - Agent tokens can't post without approval
+- **Brand voice** - AI writes in your brand's voice automatically
+- **Smart scheduling** - Queue-based posting with timezone support
 
 ## Links
 
-- [FeedMansion](https://feedmansion.com) — Sign up and start posting
-- [Help Center](https://feedmansion.com/help/) — Documentation
-- [MCP Setup Guide](https://feedmansion.com/help/mcp-setup/) — Detailed MCP instructions
-- [GitHub](https://github.com/makerprism/feedmansion-ai-agents) — This repo
+- [FeedMansion](https://feedmansion.com) - Sign up and start posting
+- [Help Center](https://feedmansion.com/help/) - Documentation
+- [MCP Setup Guide](https://feedmansion.com/help/mcp-setup/) - Detailed MCP instructions
 
 ## Support
 
