@@ -6,13 +6,16 @@ metadata:
     emoji: "✍️"
     category: content
     author: makerprism
-    version: "1.2.0"
+    version: "3.0.0"
     minOpenClawVersion: "1.0.0"
+    source: https://github.com/makerprism/feedmansion-ai-agents
 ---
 
 # FeedMansion OpenClaw Skill
 
-Control FeedMansion directly from OpenClaw! Create drafts, generate content from URLs, manage queues, and more.
+Control FeedMansion directly from OpenClaw! Create drafts, generate content from URLs, attach media, and schedule posts.
+
+> **Canonical source:** [github.com/makerprism/feedmansion-ai-agents](https://github.com/makerprism/feedmansion-ai-agents)
 
 ## Prerequisites
 
@@ -32,183 +35,349 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 }
 ```
 
-Or set the environment variable:
-```bash
-export FEEDMANSION_PAT="fm_pat_your_token_here"
-```
+---
 
-## Tools
+## Tools Overview (20 tools)
 
-### feedmansion_list_presences
-
-List all presences (brands/projects) in your FeedMansion account.
-
-**Usage:**
-```
-Use feedmansion_list_presences to show me my presences
-```
-
-**Returns:** List of presences with their IDs, names, and connected accounts.
+| Tool | Description |
+|------|-------------|
+| **Presences** | |
+| `list_presences` | List all presences you have access to |
+| `get_presence` | Get presence details, accounts, queues |
+| `update_presence` | Request changes to presence settings |
+| `get_brand_voice` | Get full brand voice for external content creation |
+| **Drafts** | |
+| `list_drafts` | List drafts with optional status filter |
+| `get_draft` | Get a specific draft's details |
+| `create_draft` | Create draft from topic/URL, optionally attach media |
+| `edit_draft` | Edit an existing draft's text or title |
+| `batch_create_drafts` | Create up to 10 drafts in one call |
+| **Media** | |
+| `create_media_upload_url` | Get presigned URL for large file uploads |
+| `add_draft_media` | Attach media to a draft |
+| `remove_draft_media` | Remove media from a draft |
+| **Scheduling** | |
+| `schedule_draft` | Approve + schedule a single draft |
+| `batch_schedule_drafts` | Approve + queue multiple drafts (max 25) |
+| `get_schedule` | View publishing schedule in date range |
+| **Accounts** | |
+| `connect_account` | Connect a social account (Bluesky, Mastodon) |
+| `list_unlinked_accounts` | List accounts not linked to a presence |
+| `link_account_to_presence` | Link an account to a presence |
+| **Feedback** | |
+| `submit_bug_report` | Submit a bug report |
+| `submit_feature_request` | Submit a feature request |
 
 ---
 
-### feedmansion_create_content
+## Presence Tools
 
-Create a new draft in a specific presence.
+### list_presences
 
-**Arguments:**
-- `presence_id` (required): The presence/brand ID
-- `text` (required): The content text
-- `target_account_ids` (optional): Array of social account IDs to target
+List all presences (brands/projects) you have access to.
 
-**Usage:**
-```
-Create a draft for presence "abc123" with text "Hello world!"
-```
+**Returns:** List with id, name, who_you_are, posting_language, timezone, account_count, member_count, presence_url.
 
 ---
 
-### feedmansion_generate_from_url
+### get_presence
 
-Generate AI content from a URL source.
+Get full details about a presence including connected social accounts, publishing queues.
 
 **Arguments:**
-- `url` (required): The URL to generate content from
-- `presence_id` (required): The presence/brand ID
-- `tone` (optional): Tone for the content (professional, casual, etc.)
+- `presence_id` (required): The presence ID
 
-**Usage:**
-```
-Generate a post from https://example.com/article for presence "abc123"
-```
+**Returns:** Presence details + `accounts[]` + `queues[]`
+
+**Key fields:**
+- `accounts[].id`, `accounts[].platform`, `accounts[].platform_username` — for scheduling
+- `queues[].id`, `queues[].name`, `queues[].schedule`, `queues[].queued_count`
 
 ---
 
-### feedmansion_list_queues
+### update_presence
 
-List all content queues for a presence.
+Request changes to presence settings. Creates a change request for review.
 
 **Arguments:**
-- `presence_id` (required): The presence/brand ID
+- `presence_id` (required)
+- `name` (optional)
+- `who_you_are`, `what_you_do`, `why_you_do_it` (optional)
+- `posting_language` (optional): e.g. 'en', 'de'
+- `timezone` (optional): IANA timezone
+- `brand_voice_description`, `brand_voice_examples` (optional)
+- `auto_generate_alt_text` (optional): boolean
+
+**Returns:** `change_request_id`, `review_url`
 
 ---
 
-### feedmansion_list_content
+### get_brand_voice
 
-List drafts/content for a presence.
+Retrieve the complete brand voice for creating content externally.
 
 **Arguments:**
-- `presence_id` (required): The presence/brand ID
-- `status` (optional): Filter by status (draft, pending_review, approved, etc.)
-- `limit` (optional): Max number of items to return
+- `presence_id` (required)
+
+**Returns:** Full brand voice including voice_dimensions, voice_profile, etc.
+
+**Use when:** Creating visual content outside FeedMansion and need to match brand voice for captions.
 
 ---
 
-### feedmansion_approve_content
+## Draft Tools
 
-Submit a draft for review. With agent tokens, content moves to `pending_review` for human approval.
+### list_drafts
+
+List drafts for a presence with optional filtering.
 
 **Arguments:**
-- `content_id` (required): The content ID to approve
-- `target_account_ids` (optional): Array of social account IDs to publish to
-- `target_accounts` (optional): Array of objects with account_id and format preference
+- `presence_id` (required)
+- `status` (optional): `draft`, `approved`, `rejected`, `published`, `partially_published`
+- `limit` (optional): 1-100 (default 50)
+- `offset` (optional): default 0
 
-**Format options:**
-- `"auto"` - Auto-detect from media (default)
-- `"post"` - Standard post (images, text)
-- `"reel"` - Short-form vertical video
-- `"story"` - Ephemeral story (Instagram only)
+**Returns:** `{ items: [], total, limit, offset }`
 
-**Usage:**
-```
-# Simple: just account IDs (format = auto)
-Approve content "xyz789" for accounts ["acc1", "acc2"]
+---
 
-# With format control per account
-Approve content "xyz789" for:
-- account "acc1" as reel
-- account "acc2" as post
-```
+### get_draft
 
-**Example with format:**
+Get a specific draft's details.
+
+**Arguments:**
+- `presence_id` (required)
+- `content_id` (required)
+
+---
+
+### create_draft
+
+Create a draft with AI-generated content from a topic or URL. Optionally attach media.
+
+**Arguments:**
+- `presence_id` (required)
+- `topic` (required): What to write about
+- `url` (optional): Article URL to generate from (AI reads and creates post)
+- `media_urls` (optional): Array of public image/video URLs to attach
+- `media` (optional): Array of media objects with `url` or `base64_data` + `filename`
+- `ghost_id` (optional): Ghost writer ID for specific style (see get_presence)
+- `custom_prompt` (optional): Custom writing instructions (mutually exclusive with ghost_id)
+- `title` (optional): For platforms like Reddit
+- `queue_id` (optional): Queue intent
+
+**Returns:** Draft with `content_url`, `review_url`
+
+**After creating:** Always show the draft text to user for review before scheduling.
+
+> ⚠️ **Image uploads:** Use `media_urls` for public URLs. For local files, use the presigned URL workflow (see Media Tools below). Avoid `base64_data` for images >10KB due to shell ARG_MAX limits.
+
+---
+
+### edit_draft
+
+Edit an existing draft's text or title. Only works on drafts (not approved/published).
+
+**Arguments:**
+- `presence_id` (required)
+- `content_id` (required)
+- `content` (optional): New text
+- `title` (optional): New title (pass empty string to clear)
+
+---
+
+### batch_create_drafts
+
+Create multiple drafts in one call (max 10).
+
+**Arguments:**
+- `presence_id` (required)
+- `items` (required): Array of 1-10 items, each with:
+  - `topic` (required)
+  - `ghost_id` OR `custom_prompt` (optional)
+- `queue_id` (optional): Applied to all items
+
+**Returns:** `created`, `total`, `review_url`, `results[]`
+
+---
+
+## Media Tools
+
+> **Recommended workflow for images:** Use public URLs (`media_urls` on create_draft) when possible. For local files, use the presigned URL workflow below.
+
+### create_media_upload_url
+
+Get a presigned URL for uploading large files directly to storage.
+
+**Arguments:**
+- `presence_id` (required)
+- `content_id` (required): Must be a draft
+- `filename` (required): e.g. 'photo.jpg', 'clip.mp4'
+
+**Returns:** `upload_url` (PUT), `upload_id`, `content_type`, `expires_in_seconds`
+
+---
+
+### add_draft_media
+
+Attach media to a draft. Provide ONE of: `media_url`, `upload_id`, or `base64_data` + `filename`.
+
+**Arguments:**
+- `presence_id` (required)
+- `content_id` (required)
+- `media_url` (optional): Download from public URL
+- `upload_id` (optional): From create_media_upload_url
+- `base64_data` + `filename` (optional): Base64-encoded file (avoid for images >10KB)
+- `alt_text` (optional)
+
+**Supported types:** jpg, png, gif, webp, mp4, mov, webm (max 50MB)
+
+---
+
+### remove_draft_media
+
+Remove attached media from a draft.
+
+**Arguments:**
+- `presence_id` (required)
+- `content_id` (required)
+- `media_id` (required)
+
+---
+
+### Presigned URL Upload Workflow
+
+For local images that don't have public URLs:
+
+1. **Create draft first** (without media)
+2. **Get upload URL:**
+   ```
+   create_media_upload_url(presence_id, content_id, filename)
+   → returns upload_url, upload_id
+   ```
+3. **Upload file:** PUT the binary file to `upload_url` with `Content-Type` header
+4. **Attach to draft:**
+   ```
+   add_draft_media(presence_id, content_id, upload_id=upload_id)
+   ```
+
+---
+
+## Scheduling Tools
+
+### schedule_draft
+
+Approve a draft and schedule it in one step.
+
+**Arguments:**
+- `presence_id` (required)
+- `draft_id` (required)
+- `target_account_ids` OR `target_accounts` (required)
+- ONE of: `queue_id`, `scheduled_for`, or `publish_now`
+
+**target_accounts format (for per-account format control):**
 ```json
-{
-  "content_id": "xyz789",
-  "target_accounts": [
-    {"account_id": "instagram-account-id", "format": "reel"},
-    {"account_id": "facebook-account-id", "format": "post"}
-  ]
-}
+[
+  {"account_id": "instagram-id", "format": "reel"},
+  {"account_id": "facebook-id", "format": "post"}
+]
 ```
+
+**Format options:** `auto` (default), `post`, `reel`, `story`
+
+**Scheduling modes:**
+- `queue_id`: Add to queue's schedule
+- `scheduled_for`: ISO 8601 datetime for specific time
+- `publish_now`: Request immediate publishing
+
+**Returns:** `status: "approved"`, `post_ids[]`, `content_url`
+
+**Always share the review_url with the user.**
 
 ---
 
-### feedmansion_enqueue_content
+### batch_schedule_drafts
 
-Request to add content to a publishing queue.
+Approve and queue multiple drafts (max 25). Queue scheduling only.
 
 **Arguments:**
-- `content_id` (required): The content ID
-- `queue_id` (required): The queue ID to add content to
+- `presence_id` (required)
+- `draft_ids` (required): Array of 1-25 draft IDs
+- `target_account_ids` OR `target_accounts` (required)
+- `queue_id` (required)
 
-**Behavior:**
-- With agent tokens: stores the enqueue request for human approval
-- Returns `review_url` where human can approve/reject
-- Human sees the request in FeedMansion web UI → approves → content gets scheduled
-
-**Usage:**
-```
-Enqueue content "xyz789" into queue "queue-abc"
-```
-
-**Response:**
-```json
-{
-  "status": "pending_enqueue",
-  "message": "Enqueue request saved. A team member will review and schedule in the web UI.",
-  "queue_id": "queue-abc",
-  "review_url": "https://feedmansion.com/app/p/presence-id/review"
-}
-```
+**Returns:** `approved`, `total`, `results[]`
 
 ---
 
-### feedmansion_schedule_content
+### get_schedule
 
-Schedule content for a specific time.
+View the publishing schedule within a date range.
 
 **Arguments:**
-- `content_id` (required): The content ID
-- `scheduled_at` (required): ISO 8601 datetime string
+- `presence_id` (required)
+- `from` (optional): ISO 8601 datetime (defaults to now)
+- `to` (optional): ISO 8601 datetime (defaults to 14 days from now)
+- `limit` (optional): default 100
 
 ---
 
-## Agent Approval Flow
+## Account Tools
 
-When using an agent token, certain actions require human approval before execution:
+### connect_account
 
-| Action | Agent Behavior | Human Action |
-|--------|---------------|--------------|
-| `approve_content` | Moves to `pending_review` status | Review in web UI, then approve |
-| `enqueue_content` | Stores `requested_queue_id` | Review in web UI, approve or reject |
-
-**Best practices:**
-- After calling approve/enqueue, inform the human with the `review_url`
-- Example: "I've submitted 3 posts for your approval. Review them here: [link]"
-- Human clicks link → sees pending items → approves/rejects in FeedMansion UI
-
----
-
-### feedmansion_list_ghosts
-
-List all ghost automations for a presence.
+Connect a social account. Supports Bluesky and Mastodon (others require OAuth in web UI).
 
 **Arguments:**
-- `presence_id` (required): The presence/brand ID
+- `presence_id` (required)
+- `platform` (required): `bluesky`, `mastodon`, etc.
+- `identifier` (Bluesky): handle or email
+- `app_password` (Bluesky): app password from bsky.app
+- `instance_url` (Mastodon): instance URL
+
+---
+
+### list_unlinked_accounts
+
+List accounts not linked to any presence.
+
+---
+
+### link_account_to_presence
+
+Link an existing account to a presence.
+
+**Arguments:**
+- `presence_id` (required)
+- `account_id` (required)
+
+---
+
+## Feedback Tools
+
+### submit_bug_report
+
+Submit a bug report.
+
+**Arguments:**
+- `description` (required)
+- `steps_to_reproduce` (optional)
+
+---
+
+### submit_feature_request
+
+Submit a feature request.
+
+**Arguments:**
+- `title` (required, max 200 chars)
+- `description` (required, max 5000 chars)
+
+---
 
 ## MCP Endpoint
 
-This skill connects to FeedMansion's MCP endpoint at:
+This skill connects to FeedMansion's MCP endpoint:
 
 ```
 https://feedmansion.com/mcp
@@ -216,15 +385,15 @@ https://feedmansion.com/mcp
 
 ## Error Handling
 
-- `401 Unauthorized`: Check your PAT token is valid
-- `403 Forbidden`: Token may lack required scopes
+- `401 Unauthorized`: Check your PAT token
+- `403 Forbidden`: Token lacks required scopes
 - `404 Not Found`: Presence or resource not found
-- `429 Too Many Requests`: Rate limit exceeded, wait and retry
+- `429 Too Many Requests`: Rate limit exceeded
 
 ## Rate Limits
 
 - 100 requests per minute per PAT
-- 1000 AI generations per day (depends on plan)
+- AI generations: rate limited per presence
 
 ## Support
 

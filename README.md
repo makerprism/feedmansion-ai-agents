@@ -17,10 +17,10 @@ Connect FeedMansion to Claude, Cursor, Windsurf, ChatGPT, or any MCP-compatible 
 
 ## What You Can Do
 
-- **Create content with AI** — Generate posts, threads, and captions from URLs or prompts
-- **Schedule automatically** — Let AI agents queue content for optimal posting times
-- **Multi-platform posting** — One agent, multiple social networks (Twitter/X, Instagram, Facebook, LinkedIn, etc.)
-- **Human oversight** — Agent tokens require approval before anything goes live
+- **Create content with AI** — Generate posts, threads, and captions from topics or URLs
+- **Attach images and videos** — Upload media via URLs or presigned uploads
+- **Multi-platform posting** — One agent, multiple social networks (Twitter/X, Instagram, Facebook, LinkedIn, Bluesky, TikTok, YouTube, Threads, Mastodon, Pinterest, Reddit, Google Business Profile)
+- **Human oversight** — Nothing goes live without your approval in the web UI
 
 ## Quick Start
 
@@ -68,41 +68,102 @@ FeedMansion exposes an **MCP (Model Context Protocol)** endpoint that gives AI a
 AI Agent → MCP → FeedMansion → Social Networks
 ```
 
-### Agent Approval Flow
+### Approval Flow
 
-For safety, agent tokens have restricted permissions:
+Nothing posts without your approval. When agents schedule content, it goes to a review queue in the FeedMansion web UI. You review and accept before anything goes live.
 
-| Action | What Happens |
-|--------|--------------|
-| Create draft | ✅ Done immediately |
-| Edit draft | ✅ Done immediately |
-| Submit for approval | ⏳ Moves to `pending_review` — you approve in web UI |
-| Request scheduling | ⏳ Stored for review — you approve in web UI |
-
-Nothing goes live without your sign-off.
-
-## Available MCP Tools
+## Available MCP Tools (20 tools)
 
 | Tool | Description |
 |------|-------------|
-| `list_presences` | List your brands/projects |
-| `get_presence` | Get presence with connected accounts |
-| `list_content` | List content with status filter |
-| `get_content` | Get specific content details |
-| `create_content` | Create a new draft |
-| `update_content` | Update an existing draft |
-| `add_content_media` | Attach media from URL |
-| `remove_content_media` | Remove attached media |
-| `generate_content_from_url` | Generate AI content from a URL |
-| `approve_content` | Submit for human approval |
-| `enqueue_content` | Request to add to queue |
+| **Presences** | |
+| `list_presences` | List all presences (brands/projects) |
+| `get_presence` | Get presence details with accounts, queues |
+| `update_presence` | Request changes to presence settings |
+| `get_brand_voice` | Get full brand voice for external content |
+| **Drafts** | |
+| `list_drafts` | List drafts with optional status filter |
+| `get_draft` | Get a specific draft's details |
+| `create_draft` | Create draft from topic/URL, optionally attach media |
+| `edit_draft` | Edit draft text or title |
+| `batch_create_drafts` | Create up to 10 drafts in one call |
+| **Media** | |
+| `create_media_upload_url` | Get presigned URL for large file uploads |
+| `add_draft_media` | Attach media (URL, upload_id, or base64) |
+| `remove_draft_media` | Remove media from a draft |
+| **Scheduling** | |
+| `schedule_draft` | Approve + schedule (queue, specific time, or now) |
+| `batch_schedule_drafts` | Approve + queue multiple drafts |
+| `get_schedule` | View publishing schedule in date range |
+| **Accounts** | |
+| `connect_account` | Connect a social account (Bluesky, Mastodon) |
+| `list_unlinked_accounts` | List accounts not linked to a presence |
+| `link_account_to_presence` | Link an account to a presence |
+| **Feedback** | |
+| `submit_bug_report` | Submit a bug report |
+| `submit_feature_request` | Submit a feature request |
+
+### Key Workflows
+
+#### Creating a Draft with AI
+
+```json
+{
+  "name": "create_draft",
+  "arguments": {
+    "presence_id": "your-presence-id",
+    "topic": "Announce our new product feature",
+    "url": "https://example.com/blog/post"  // optional: generate from URL
+  }
+}
+```
+
+Returns draft with `content_url` and `review_url`. Always show draft text to user before scheduling.
+
+#### Attaching Images
+
+**Option 1: Public URL (easiest)**
+```json
+{
+  "name": "create_draft",
+  "arguments": {
+    "presence_id": "...",
+    "topic": "...",
+    "media_urls": ["https://example.com/image.jpg"]
+  }
+}
+```
+
+**Option 2: Presigned URL (for local files)**
+1. Create draft first
+2. Call `create_media_upload_url` → get `upload_url` and `upload_id`
+3. PUT the file to `upload_url` (binary, no base64)
+4. Call `add_draft_media` with `upload_id`
+
+> ⚠️ **Avoid base64 for images** — Shell ARG_MAX limits make inline base64 unreliable for files >10KB. Use presigned URLs instead.
+
+#### Scheduling
+
+```json
+{
+  "name": "schedule_draft",
+  "arguments": {
+    "presence_id": "...",
+    "draft_id": "...",
+    "target_account_ids": ["instagram-id", "twitter-id"],
+    "publish_now": true
+  }
+}
+```
+
+Options: `queue_id`, `scheduled_for` (ISO 8601), or `publish_now`.
 
 ## Why FeedMansion?
 
 - **Built for AI** — Native MCP support, designed for agent integration
-- **Multi-platform** — Post to Twitter/X, Instagram, Facebook, LinkedIn, YouTube, TikTok, and more
-- **Human in the loop** — Agent tokens can't post without approval
-- **Ghost automations** — AI personas that match your brand voice
+- **Multi-platform** — 13 platforms supported
+- **Human in the loop** — Agents can't post without approval
+- **Brand voice** — AI generates content that matches your voice
 - **Smart scheduling** — Queue-based posting with timezone support
 
 ## Links
