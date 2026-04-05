@@ -84,7 +84,7 @@ Nothing posts without your approval. When agents schedule content, it goes to a 
 | **Drafts** | |
 | `list_drafts` | List drafts with optional status filter |
 | `get_draft` | Get a specific draft with details, target accounts, and media |
-| `create_draft` | Create draft from topic/URL, optionally attach media |
+| `create_draft` | Create draft from topic, URLs, source items, and/or images |
 | `edit_draft` | Edit draft text or title (returns updated draft with media) |
 | `batch_create_drafts` | Create up to 10 drafts in one call |
 | **Media** | |
@@ -106,18 +106,21 @@ Nothing posts without your approval. When agents schedule content, it goes to a 
 
 #### Creating a Draft with AI
 
+`create_draft` accepts multimodal input. Combine any of: topic text, URLs (up to 5), source items (feed/calendar/email), and media.
+
 ```json
 {
   "name": "create_draft",
   "arguments": {
     "presence_id": "your-presence-id",
     "topic": "Announce our new product feature",
-    "url": "https://example.com/blog/post"  // optional: generate from URL
+    "urls": ["https://example.com/blog/post"],
+    "multi_draft": true
   }
 }
 ```
 
-Returns draft with `content_url` and `review_url`. Always show draft text to user before scheduling.
+Returns draft with `content_url` and `review_url`. When `multi_draft` is true, returns up to 5 draft variations. Always show draft text to user before scheduling.
 
 #### Attaching Images
 

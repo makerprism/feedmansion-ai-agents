@@ -63,7 +63,7 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 | **Drafts** | |
 | `list_drafts` | List drafts with optional status filter |
 | `get_draft` | Get a specific draft with details, target accounts, and media |
-| `create_draft` | Create draft from topic/URL, optionally attach media |
+| `create_draft` | Create draft from topic, URLs, source items, and/or images |
 | `edit_draft` | Edit draft text or title (returns updated draft with media) |
 | `batch_create_drafts` | Create up to 10 drafts in one call |
 | **Media** | |
@@ -168,12 +168,16 @@ Get a specific draft with its details, target accounts, and attached media.
 
 ### create_draft
 
-Create a draft with AI-generated content from a topic or URL. Optionally attach media.
+Create a draft with AI-generated content. Supports multimodal input: combine text, URLs, source items, and media. At least one of `topic`, `url`, `urls`, or `source_item_id` is required.
 
 **Arguments:**
 - `presence_id` (required)
-- `topic` (required): What to write about
-- `url` (optional): Article URL to generate from (AI reads and creates post)
+- `topic` (optional): What to write about, or freeform text/notes for generation
+- `url` (optional): Single article URL to generate from
+- `urls` (optional): Array of up to 5 URLs to generate from (content fetched and combined)
+- `source_item_id` (optional): ID of a feed item, calendar event, or email inbox item
+- `source_item_type` (optional, required with source_item_id): `"feed_item"`, `"calendar_event"`, or `"email_inbox_item"`
+- `multi_draft` (optional, default false): When true, generates up to 5 draft variations
 - `media_urls` (optional): Array of public image/video URLs to attach
 - `media` (optional): Array of media objects with `url` or `base64_data` + `filename`
 - `ghost_id` (optional): Ghost writer ID for specific style (see get_presence)
@@ -181,7 +185,7 @@ Create a draft with AI-generated content from a topic or URL. Optionally attach 
 - `title` (optional): For platforms like Reddit
 - `queue_id` (optional): Queue intent
 
-**Returns:** Draft with `content_url`, `review_url`
+**Returns:** Single draft: `content_url`, `review_url`, draft content. Multi-draft (`multi_draft: true`): `draft_count`, `draft_ids[]`, `first_draft`, `content_url`, `review_url`.
 
 **After creating:** Always show the draft text to user for review before scheduling.
 
