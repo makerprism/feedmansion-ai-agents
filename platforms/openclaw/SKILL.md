@@ -37,6 +37,20 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 
 ---
 
+## ⚠️ Recommended Workflow
+
+**Always follow this sequence to avoid mistakes:**
+
+1. **Start with:** `list_presences` → `get_presence(presence_id)`
+2. **Show user the platforms:** "Your accounts: X (Twitter), Y (Bluesky), Z (Mastodon)"
+3. **Ask which to use** before any create/schedule operations
+4. **After creating drafts:** Show text to user for review
+5. **After scheduling:** Verify with `get_schedule` or check queue count
+
+> **Never assume platforms.** Always confirm with user which accounts to post to.
+
+---
+
 ## Tools Overview (19 tools)
 
 | Tool | Description |
@@ -303,13 +317,17 @@ Approve a draft and schedule it in one step.
 
 Approve and queue multiple drafts (max 25). Queue scheduling only.
 
+> ⚠️ **REQUIRED:** You MUST specify `target_account_ids` or `target_accounts`. There is no default. Always confirm with user which platforms to use.
+
 **Arguments:**
 - `presence_id` (required)
 - `draft_ids` (required): Array of 1-25 draft IDs
-- `target_account_ids` OR `target_accounts` (required)
+- `target_account_ids` OR `target_accounts` (required) — list from `get_presence`
 - `queue_id` (required)
 
 **Returns:** `approved`, `total`, `results[]`
+
+**After scheduling:** Verify posts were created by checking `get_schedule` or queue `queued_count`.
 
 ---
 
