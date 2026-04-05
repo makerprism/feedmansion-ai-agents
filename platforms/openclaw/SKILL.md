@@ -37,7 +37,7 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 
 ---
 
-## Tools Overview (20 tools)
+## Tools Overview (19 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -48,9 +48,9 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 | `get_brand_voice` | Get full brand voice for external content creation |
 | **Drafts** | |
 | `list_drafts` | List drafts with optional status filter |
-| `get_draft` | Get a specific draft's details |
+| `get_draft` | Get a specific draft with details, target accounts, and media |
 | `create_draft` | Create draft from topic/URL, optionally attach media |
-| `edit_draft` | Edit an existing draft's text or title |
+| `edit_draft` | Edit draft text or title (returns updated draft with media) |
 | `batch_create_drafts` | Create up to 10 drafts in one call |
 | **Media** | |
 | `create_media_upload_url` | Get presigned URL for large file uploads |
@@ -65,8 +65,7 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 | `list_unlinked_accounts` | List accounts not linked to a presence |
 | `link_account_to_presence` | Link an account to a presence |
 | **Feedback** | |
-| `submit_bug_report` | Submit a bug report |
-| `submit_feature_request` | Submit a feature request |
+| `submit_feedback` | Submit a bug report, feature request, or general feedback |
 
 ---
 
@@ -143,11 +142,13 @@ List drafts for a presence with optional filtering.
 
 ### get_draft
 
-Get a specific draft's details.
+Get a specific draft with its details, target accounts, and attached media.
 
 **Arguments:**
 - `presence_id` (required)
 - `content_id` (required)
+
+**Returns:** Draft with all fields, `target_accounts[]`, and `media[]` (each with presigned `storage_url`).
 
 ---
 
@@ -183,6 +184,8 @@ Edit an existing draft's text or title. Only works on drafts (not approved/publi
 - `content_id` (required)
 - `content` (optional): New text
 - `title` (optional): New title (pass empty string to clear)
+
+**Returns:** Updated draft with `target_accounts[]` and `media[]` (each with presigned `storage_url`).
 
 ---
 
@@ -355,23 +358,15 @@ Link an existing account to a presence.
 
 ## Feedback Tools
 
-### submit_bug_report
+### submit_feedback
 
-Submit a bug report.
-
-**Arguments:**
-- `description` (required)
-- `steps_to_reproduce` (optional)
-
----
-
-### submit_feature_request
-
-Submit a feature request.
+Submit feedback: a bug report, feature request, or general feedback (thank you notes, comments, suggestions).
 
 **Arguments:**
-- `title` (required, max 200 chars)
-- `description` (required, max 5000 chars)
+- `feedback_type` (required): `bug_report`, `feature_request`, or `general`
+- `description` (required): The feedback message
+- `title` (optional): Short title (max 200 chars, required for feature requests)
+- `steps_to_reproduce` (optional): Only relevant for bug reports
 
 ---
 

@@ -72,7 +72,7 @@ AI Agent → MCP → FeedMansion → Social Networks
 
 Nothing posts without your approval. When agents schedule content, it goes to a review queue in the FeedMansion web UI. You review and accept before anything goes live.
 
-## Available MCP Tools (20 tools)
+## Available MCP Tools (19 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -83,9 +83,9 @@ Nothing posts without your approval. When agents schedule content, it goes to a 
 | `get_brand_voice` | Get full brand voice for external content |
 | **Drafts** | |
 | `list_drafts` | List drafts with optional status filter |
-| `get_draft` | Get a specific draft's details |
+| `get_draft` | Get a specific draft with details, target accounts, and media |
 | `create_draft` | Create draft from topic/URL, optionally attach media |
-| `edit_draft` | Edit draft text or title |
+| `edit_draft` | Edit draft text or title (returns updated draft with media) |
 | `batch_create_drafts` | Create up to 10 drafts in one call |
 | **Media** | |
 | `create_media_upload_url` | Get presigned URL for large file uploads |
@@ -100,8 +100,7 @@ Nothing posts without your approval. When agents schedule content, it goes to a 
 | `list_unlinked_accounts` | List accounts not linked to a presence |
 | `link_account_to_presence` | Link an account to a presence |
 | **Feedback** | |
-| `submit_bug_report` | Submit a bug report |
-| `submit_feature_request` | Submit a feature request |
+| `submit_feedback` | Submit a bug report, feature request, or general feedback |
 
 ### Key Workflows
 
