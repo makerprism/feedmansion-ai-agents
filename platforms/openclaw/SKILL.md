@@ -51,7 +51,7 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 
 ---
 
-## Tools Overview (19 tools)
+## Tools Overview (21 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -73,6 +73,8 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 | **Scheduling** | |
 | `schedule_draft` | Approve + schedule a single draft |
 | `batch_schedule_drafts` | Approve + queue multiple drafts (max 25) |
+| `add_platforms_to_draft` | Add platforms to already-approved content |
+| `batch_add_platforms_to_drafts` | Add platforms to multiple approved drafts (max 25) |
 | `get_schedule` | View publishing schedule in date range |
 | **Accounts** | |
 | `connect_account` | Connect a social account (Bluesky, Mastodon) |
@@ -332,6 +334,36 @@ Approve and queue multiple drafts (max 25). Queue scheduling only.
 **Returns:** `approved`, `total`, `results[]`
 
 **After scheduling:** Verify posts were created by checking `get_schedule` or queue `queued_count`.
+
+---
+
+### add_platforms_to_draft
+
+Add new social accounts to an already-approved draft. Generates platform-specific posts for the new accounts while preserving all existing posts and scheduling.
+
+**Arguments:**
+- `presence_id` (required)
+- `content_id` (required): Must be in Approved status
+- `target_accounts` (required): Array of `{account_id, format?}` - must not overlap with existing targets
+
+**Returns:** `status`, `new_post_count`, `new_post_ids[]`, `content_url`
+
+**Use when:** Content is already approved or scheduled and you need to publish to additional accounts without recreating drafts.
+
+---
+
+### batch_add_platforms_to_drafts
+
+Add new social accounts to multiple already-approved drafts (max 25). Same target accounts are added to all drafts.
+
+**Arguments:**
+- `presence_id` (required)
+- `content_ids` (required): Array of 1-25 content IDs (all must be Approved)
+- `target_accounts` (required): Array of `{account_id, format?}`
+
+**Returns:** `status`, `message`, `results[]` (per-item success/error)
+
+**Use when:** Adding a new platform to many scheduled posts at once (e.g. adding a 4th platform to 50 drafts).
 
 ---
 

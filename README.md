@@ -72,7 +72,7 @@ AI Agent → MCP → FeedMansion → Social Networks
 
 Nothing posts without your approval. When agents schedule content, it goes to a review queue in the FeedMansion web UI. You review and accept before anything goes live.
 
-## Available MCP Tools (19 tools)
+## Available MCP Tools (21 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -94,6 +94,8 @@ Nothing posts without your approval. When agents schedule content, it goes to a 
 | **Scheduling** | |
 | `schedule_draft` | Approve + schedule (queue, specific time, or now) |
 | `batch_schedule_drafts` | Approve + queue multiple drafts |
+| `add_platforms_to_draft` | Add platforms to already-approved content |
+| `batch_add_platforms_to_drafts` | Add platforms to multiple approved drafts (max 25) |
 | `get_schedule` | View publishing schedule in date range |
 | **Accounts** | |
 | `connect_account` | Connect a social account (Bluesky, Mastodon) |
@@ -159,6 +161,25 @@ Returns draft with `content_url` and `review_url`. When `multi_draft` is true, r
 ```
 
 Options: `queue_id`, `scheduled_for` (ISO 8601), or `publish_now`.
+
+#### Adding Platforms to Existing Content
+
+Already scheduled content to 3 platforms and need a 4th? No need to recreate anything:
+
+```json
+{
+  "name": "add_platforms_to_draft",
+  "arguments": {
+    "presence_id": "...",
+    "content_id": "...",
+    "target_accounts": [
+      {"account_id": "new-platform-id", "format": "auto"}
+    ]
+  }
+}
+```
+
+For bulk operations (e.g. adding a platform to 50 scheduled drafts), use `batch_add_platforms_to_drafts` with up to 25 `content_ids` per call.
 
 ## Why FeedMansion?
 
