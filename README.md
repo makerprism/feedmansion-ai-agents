@@ -72,7 +72,7 @@ AI Agent → MCP → FeedMansion → Social Networks
 
 Nothing posts without your approval. When agents schedule content, it goes to a review queue in the FeedMansion web UI. You review and accept before anything goes live.
 
-## Available MCP Tools (22 tools)
+## Available MCP Tools (24 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -96,7 +96,8 @@ Nothing posts without your approval. When agents schedule content, it goes to a 
 | `batch_schedule_drafts` | Approve + queue multiple drafts |
 | `add_platforms_to_draft` | Add platforms to already-approved content |
 | `batch_add_platforms_to_drafts` | Add platforms to multiple approved drafts (max 25) |
-| `get_schedule` | View publishing schedule in date range |
+| `get_scheduled_and_queued_posts` | View scheduled and queued content |
+| `get_published_posts` | View published and failed content |
 | `list_queue_posts` | List all posts in a specific queue |
 | `list_unscheduled_content` | List approved content with no queue/schedule assigned |
 | **Accounts** | |

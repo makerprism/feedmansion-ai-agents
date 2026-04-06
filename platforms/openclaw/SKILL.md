@@ -45,13 +45,13 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 2. **Show user the platforms:** "Your accounts: X (Twitter), Y (Bluesky), Z (Mastodon)"
 3. **Ask which to use** before any create/schedule operations
 4. **After creating drafts:** Show text to user for review
-5. **After scheduling:** Verify with `get_schedule` or check queue count
+5. **After scheduling:** Verify with `get_scheduled_and_queued_posts` or check queue count
 
 > **Never assume platforms.** Always confirm with user which accounts to post to.
 
 ---
 
-## Tools Overview (21 tools)
+## Tools Overview (24 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -75,7 +75,8 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 | `batch_schedule_drafts` | Approve + queue multiple drafts (max 25) |
 | `add_platforms_to_draft` | Add platforms to already-approved content |
 | `batch_add_platforms_to_drafts` | Add platforms to multiple approved drafts (max 25) |
-| `get_schedule` | View publishing schedule in date range |
+| `get_scheduled_and_queued_posts` | View scheduled and queued content |
+| `get_published_posts` | View published and failed content |
 | **Accounts** | |
 | `connect_account` | Connect a social account (Bluesky, Mastodon) |
 | `list_unlinked_accounts` | List accounts not linked to a presence |
@@ -333,7 +334,7 @@ Approve and queue multiple drafts (max 25). Queue scheduling only.
 
 **Returns:** `approved`, `total`, `results[]`
 
-**After scheduling:** Verify posts were created by checking `get_schedule` or queue `queued_count`.
+**After scheduling:** Verify posts were created by checking `get_scheduled_and_queued_posts` or queue `queued_count`.
 
 ---
 
@@ -367,15 +368,31 @@ Add new social accounts to multiple already-approved drafts (max 25). Same targe
 
 ---
 
-### get_schedule
+### get_scheduled_and_queued_posts
 
-View the publishing schedule within a date range.
+View scheduled and queued content that has not yet been published.
 
 **Arguments:**
 - `presence_id` (required)
 - `from` (optional): ISO 8601 datetime (defaults to now)
 - `to` (optional): ISO 8601 datetime (defaults to 14 days from now)
 - `limit` (optional): default 100
+
+**Use for:** Seeing what's coming up, finding free time slots, checking for scheduling conflicts.
+
+---
+
+### get_published_posts
+
+View content that has been published, partially published, or has failed posts.
+
+**Arguments:**
+- `presence_id` (required)
+- `from` (optional): ISO 8601 datetime (defaults to 14 days ago)
+- `to` (optional): ISO 8601 datetime (defaults to now)
+- `limit` (optional): default 100
+
+**Use for:** Reviewing what went out, checking publishing results, identifying failed posts. Results ordered most recent first.
 
 ---
 
