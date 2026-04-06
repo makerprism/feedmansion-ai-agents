@@ -192,7 +192,7 @@ Create a draft with AI-generated content. Supports multimodal input: combine tex
 
 **After creating:** Always show the draft text to user for review before scheduling.
 
-> ⚠️ **Image uploads:** Use `media_urls` for public URLs. For local files, use the presigned URL workflow (see Media Tools below). Avoid `base64_data` for images >10KB due to shell ARG_MAX limits.
+> **Image uploads:** Prefer `media_urls` (public URLs) for the simplest workflow. For local files, use the presigned URL workflow (see Media Tools below). `base64_data` works for small files but MCP clients that pass arguments via shell may hit OS argument length limits for larger files.
 
 ---
 
@@ -227,7 +227,10 @@ Create multiple drafts in one call (max 10).
 
 ## Media Tools
 
-> **Recommended workflow for images:** Use public URLs (`media_urls` on create_draft) when possible. For local files, use the presigned URL workflow below.
+> **Recommended workflow for images:**
+> 1. **Public URL** (`media_url` or `media_urls`): Simplest. Server downloads the file. 1 MCP call.
+> 2. **Presigned URL** (`create_media_upload_url` + PUT + `add_draft_media`): For local files. 2 MCP calls + 1 HTTP PUT.
+> 3. **Inline base64** (`base64_data` + `filename`): For small files or sandboxed environments. May hit shell argument limits for larger files.
 
 ### create_media_upload_url
 
@@ -244,14 +247,15 @@ Get a presigned URL for uploading large files directly to storage.
 
 ### add_draft_media
 
-Attach media to a draft. Provide ONE of: `media_url`, `upload_id`, or `base64_data` + `filename`.
+Attach media to a draft. Provide exactly ONE of: `library_media_id`, `media_url`, `upload_id`, or `base64_data` + `filename`.
 
 **Arguments:**
 - `presence_id` (required)
 - `content_id` (required)
-- `media_url` (optional): Download from public URL
-- `upload_id` (optional): From create_media_upload_url
-- `base64_data` + `filename` (optional): Base64-encoded file (avoid for images >10KB)
+- `library_media_id` (optional): Attach existing media from your library without re-uploading
+- `media_url` (optional): Public URL for server-side download (recommended)
+- `upload_id` (optional): From `create_media_upload_url` presigned upload
+- `base64_data` + `filename` (optional): Inline base64-encoded file (up to 50 MB, best for small files)
 - `alt_text` (optional)
 
 **Supported types:** jpg, png, gif, webp, mp4, mov, webm (max 50MB)
@@ -271,16 +275,15 @@ Remove attached media from a draft.
 
 ### Presigned URL Upload Workflow
 
-For local images that don't have public URLs:
+For local files that don't have public URLs (2 MCP calls + 1 HTTP PUT):
 
-1. **Create draft first** (without media)
-2. **Get upload URL:**
+1. **Get upload URL:**
    ```
    create_media_upload_url(presence_id, content_id, filename)
    → returns upload_url, upload_id
    ```
-3. **Upload file:** PUT the binary file to `upload_url` with `Content-Type` header
-4. **Attach to draft:**
+2. **Upload file:** PUT the binary file to `upload_url` with `Content-Type` header
+3. **Attach to draft:**
    ```
    add_draft_media(presence_id, content_id, upload_id=upload_id)
    ```

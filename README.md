@@ -129,7 +129,10 @@ Returns draft with `content_url` and `review_url`. When `multi_draft` is true, r
 
 #### Attaching Images
 
-**Option 1: Public URL (easiest)**
+**Option 1: Public URL (recommended)**
+
+The simplest approach. The server downloads the image for you in a single call.
+
 ```json
 {
   "name": "create_draft",
@@ -141,13 +144,19 @@ Returns draft with `content_url` and `review_url`. When `multi_draft` is true, r
 }
 ```
 
-**Option 2: Presigned URL (for local files)**
-1. Create draft first
-2. Call `create_media_upload_url` → get `upload_url` and `upload_id`
-3. PUT the file to `upload_url` (binary, no base64)
-4. Call `add_draft_media` with `upload_id`
+You can also use `add_draft_media` with `media_url` to attach media to an existing draft.
 
-> ⚠️ **Avoid base64 for images** — Shell ARG_MAX limits make inline base64 unreliable for files >10KB. Use presigned URLs instead.
+**Option 2: Presigned URL (for local files)**
+
+Use this when you have a local file without a public URL. Requires 2 MCP calls + 1 HTTP PUT.
+
+1. Call `create_media_upload_url` with the draft's `content_id` → get `upload_url` and `upload_id`
+2. PUT the binary file to `upload_url` with the correct `Content-Type` header
+3. Call `add_draft_media` with `upload_id` to finalize
+
+**Option 3: Inline base64 (for small files or sandboxed environments)**
+
+Pass `base64_data` + `filename` via `create_draft`'s `media` array or `add_draft_media`. Works well for small images. For larger files, MCP clients that pass tool arguments via shell commands may hit OS argument length limits. Prefer URL download or presigned upload for files over ~100KB.
 
 #### Scheduling
 
