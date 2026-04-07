@@ -46,12 +46,13 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 3. **Ask which to use** before any create/schedule operations
 4. **After creating drafts:** Show text to user for review
 5. **After scheduling:** Verify with `get_scheduled_and_queued_posts` or check queue count
+6. **For deletions:** Use `request_delete` with `content_id` (whole content) or `post_ids` (specific posts). The user approves in the Agent Actions page.
 
 > **Never assume platforms.** Always confirm with user which accounts to post to.
 
 ---
 
-## Tools Overview (24 tools)
+## Tools Overview (25 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -77,6 +78,8 @@ Add to your OpenClaw config (`~/.openclaw/openclaw.json`):
 | `batch_add_platforms_to_drafts` | Add platforms to multiple approved drafts (max 25) |
 | `get_scheduled_and_queued_posts` | View scheduled and queued content |
 | `get_published_posts` | View published and failed content |
+| **Deletion** | |
+| `request_delete` | Request deletion of content or specific posts |
 | **Accounts** | |
 | `connect_account` | Connect a social account (Bluesky, Mastodon) |
 | `list_unlinked_accounts` | List accounts not linked to a presence |
@@ -396,6 +399,29 @@ View content that has been published, partially published, or has failed posts.
 - `limit` (optional): default 100
 
 **Use for:** Reviewing what went out, checking publishing results, identifying failed posts. Results ordered most recent first.
+
+---
+
+## Deletion Tools
+
+### request_delete
+
+Request deletion of content or specific platform posts. This does NOT delete immediately. It creates a delete intent that the user must approve in the Agent Actions page.
+
+Provide exactly one of `content_id` or `post_ids` (not both).
+
+**Arguments:**
+- `presence_id` (required)
+- `content_id` (optional): Delete an entire content item and all its pre-publication posts. Only works for content in `draft` or `approved` status. Replaces any pending schedule intent.
+- `post_ids` (optional): Array of post IDs to delete. Only works for posts in `awaiting_schedule`, `queued`, or `scheduled` status. Get post IDs from `get_scheduled_and_queued_posts`.
+
+**Returns:** `success`, `message`, and either `content_id` or `post_ids_count`
+
+**Use `content_id` when:** The user wants to remove an entire draft or content item ("delete that draft about the product launch", "remove everything I created yesterday").
+
+**Use `post_ids` when:** The user wants to remove specific platform posts while keeping others ("don't post that to LinkedIn", "cancel the Instagram reel but keep the Twitter post").
+
+**After requesting:** Tell the user the delete intent was created and they need to approve it in the Agent Actions page.
 
 ---
 

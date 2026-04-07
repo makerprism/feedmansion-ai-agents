@@ -70,9 +70,9 @@ AI Agent → MCP → FeedMansion → Social Networks
 
 ### Approval Flow
 
-Nothing posts without your approval. When agents schedule content, it goes to a review queue in the FeedMansion web UI. You review and accept before anything goes live.
+Nothing happens without your approval. When agents schedule or delete content, it goes to the **Agent Actions** page in the FeedMansion web UI. You review and approve before anything goes live.
 
-## Available MCP Tools (24 tools)
+## Available MCP Tools (25 tools)
 
 | Tool | Description |
 |------|-------------|
@@ -100,6 +100,8 @@ Nothing posts without your approval. When agents schedule content, it goes to a 
 | `get_published_posts` | View published and failed content |
 | `list_queue_posts` | List all posts in a specific queue |
 | `list_unscheduled_content` | List approved content with no queue/schedule assigned |
+| **Deletion** | |
+| `request_delete` | Request deletion of content or specific posts (requires approval) |
 | **Accounts** | |
 | `connect_account` | Connect a social account (Bluesky, Mastodon) |
 | `list_unlinked_accounts` | List accounts not linked to a presence |
@@ -192,6 +194,34 @@ Already scheduled content to 3 platforms and need a 4th? No need to recreate any
 ```
 
 For bulk operations (e.g. adding a platform to 50 scheduled drafts), use `batch_add_platforms_to_drafts` with up to 25 `content_ids` per call.
+
+#### Deleting Content or Posts
+
+Use `request_delete` to propose deletions. The user approves in the Agent Actions page.
+
+**Delete an entire content item** (and all its scheduled posts):
+```json
+{
+  "name": "request_delete",
+  "arguments": {
+    "presence_id": "...",
+    "content_id": "the-content-id"
+  }
+}
+```
+
+**Delete specific platform posts** (keep others from the same content):
+```json
+{
+  "name": "request_delete",
+  "arguments": {
+    "presence_id": "...",
+    "post_ids": ["post-id-1", "post-id-2"]
+  }
+}
+```
+
+Provide exactly one of `content_id` or `post_ids` (not both). Only works for pre-publication content and posts.
 
 ## Why FeedMansion?
 
