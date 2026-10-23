@@ -101,7 +101,7 @@ Nothing happens without your approval. When agents schedule or delete content, i
 | `list_queue_posts` | List all posts in a specific queue |
 | `list_unscheduled_content` | List approved content with no queue/schedule assigned |
 | **Deletion** | |
-| `request_delete` | Request deletion of content or specific posts (requires approval) |
+| `request_delete` | Request deletion of content items or specific posts (requires approval) |
 | **Accounts** | |
 | `connect_account` | Connect a social account (Bluesky, Mastodon) |
 | `list_unlinked_accounts` | List accounts not linked to a presence |
@@ -199,13 +199,13 @@ For bulk operations (e.g. adding a platform to 50 scheduled drafts), use `batch_
 
 Use `request_delete` to propose deletions. The user approves in the Agent Actions page.
 
-**Delete an entire content item** (and all its scheduled posts):
+**Delete whole content items** (and all their scheduled posts), up to 50 per call:
 ```json
 {
   "name": "request_delete",
   "arguments": {
     "presence_id": "...",
-    "content_id": "the-content-id"
+    "content_ids": ["content-id-1", "content-id-2"]
   }
 }
 ```
@@ -221,7 +221,7 @@ Use `request_delete` to propose deletions. The user approves in the Agent Action
 }
 ```
 
-Provide exactly one of `content_id` or `post_ids` (not both). Only works for pre-publication content and posts.
+Provide `content_ids` or `post_ids` (not both). Only works for pre-publication content and posts. A request is all-or-nothing: if any content item is invalid, no delete intents are created. To remove something from a channel, delete the content item, not its posts. Deleting every post of an approved content item moves the item to trash once the user approves. The single-item `content_id` argument still works but is deprecated.
 
 ## Why FeedMansion?
 
